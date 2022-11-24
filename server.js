@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const {MongoClient} = require('mongodb');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const port = process.env.PORT | 3000;
+const port = process.env.PORT | 5000;
 const app = express();
 const uri ='mongodb+srv://meiching:T%40ylor0213@cluster0.23qtgb3.mongodb.net/testingdb?retryWrites=true&w=majority'
 // const uri ='mongodb://localhost:27017/testingdb';
@@ -13,6 +15,7 @@ const Route= require('./routes/employee');
 mongoose.connect(uri, {useNewUrlParser:true,useUnifiedTopology:true});
 const db= mongoose.connection;
 
+console.log('port:', port);
 /* async function run() {
   try {
     // Connect the client to the server (optional starting in v4.7)
