@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const {MongoClient} = require('mongodb');
 const bodyParser = require('body-parser');
 
-const port =  3000;
+const port = process.env.PORT | 3000;
 const app = express();
 const uri ='mongodb+srv://meiching:T%40ylor0213@cluster0.23qtgb3.mongodb.net/testingdb?retryWrites=true&w=majority'
 // const uri ='mongodb://localhost:27017/testingdb';
