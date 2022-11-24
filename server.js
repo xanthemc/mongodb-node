@@ -4,12 +4,12 @@ const morgan = require('morgan');
 const {MongoClient} = require('mongodb');
 const bodyParser = require('body-parser');
 
-const port = 3000;
+const port =  3000;
 const app = express();
 const uri ='mongodb+srv://meiching:T%40ylor0213@cluster0.23qtgb3.mongodb.net/testingdb?retryWrites=true&w=majority'
 // const uri ='mongodb://localhost:27017/testingdb';
 
-const EmployeeRoute= require('./routes/employee');
+const Route= require('./routes/employee');
 mongoose.connect(uri, {useNewUrlParser:true,useUnifiedTopology:true});
 const db= mongoose.connection;
 
@@ -40,5 +40,5 @@ app.listen(port, ()=> {
     console.log(`Server started on port ${port}`);
 });
 
-app.use('/api',EmployeeRoute);
+app.use('/api',Route);
 
