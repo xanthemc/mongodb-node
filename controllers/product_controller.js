@@ -32,16 +32,30 @@ const getProduct =(req, res, next) => {
                 message:'An error occurred'
             })
     })
-
-   /*  let result =  await Tutorial.find();
-
-    return res.json({
-        status_code:status_code,
-        data: result
-    }); */
-    
-
 }
+const getSingleProduct =async (req, res, next) => {
+    let _id = mongoose.Types.ObjectId(req.params.id);
+   /*  let product = await Product.findById(_id);
+
+    return res.json({ 
+        status_code:res.statusCode,
+        message:'Success',
+        data:product }); */
+        Product.findById(_id).then(
+        response => {
+            res.json({
+                status_code:res.statusCode,
+                message:'Success',
+                data:response
+            })}).catch(err => {
+            res.json({
+                status_code:res.statusCode,
+                message:'An error occurred'
+            })
+    }) 
+}
+
+
 
 //add new Product
 const createProduct = async (req, res, next) => {
@@ -72,15 +86,19 @@ const updateProduct = async (req, res, next) => {
 
     Object.assign(oldProduct, product);
     let newProduct = await oldProduct.save();
-  
-
-     let added = difference(newCarts, oldCarts);
-     let removed = difference(oldCarts, newCarts);
+    //  let added = difference(newCarts, oldCarts);
+    //  let removed = difference(oldCarts, newCarts);
     // console.log(added, removed);
-    await Cart.updateMany({ '_id': added }, { $addToSet: { product: product._id } });
-    await Cart.updateMany({ '_id': removed }, { $pull: { product: product._id } });
+    // await Cart.updateMany({ '_id': added }, { $addToSet: { product: product._id } });
+    // await Cart.updateMany({ '_id': removed }, { $pull: { product: product._id } });
   
-     return res.send(newTutorial);
+     return res.send(
+        {
+            status_code:res.statusCode,
+            data: newProduct
+        }
+
+     );
 }
 
 
@@ -96,7 +114,7 @@ const deleteProduct = async (req, res, next) => {
    await Product.findByIdAndDelete(_id).then(()=>{
         res.json({
             status_code:res.statusCode,
-            message:'Tutorial delete successfully',
+            message:'Product delete successfully',
         
         })
     }).catch(error=>{
@@ -106,7 +124,7 @@ const deleteProduct = async (req, res, next) => {
         })
     });
     //  console.log(`tutorial: ${tutorial}`);
-    await Cart.updateMany({"_id": product._id}, {$pull:{products:product._id}});
+    // await Cart.updateMany({"_id": product._id}, {$pull:{products:product._id}});
 
     return res;
 
@@ -115,6 +133,6 @@ const deleteProduct = async (req, res, next) => {
 
 
 module.exports = {
-    getProduct,createProduct,updateProduct,deleteProduct
+    getProduct,getSingleProduct, createProduct,updateProduct,deleteProduct
 }
 

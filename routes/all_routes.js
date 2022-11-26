@@ -27,6 +27,7 @@ router.delete('/tag/:id', TagController.deleteTag);
 
 //Products
 router.get('/product', ProductController.getProduct);
+router.get('/product/:id', ProductController.getSingleProduct);
 router.post('/product', ProductController.createProduct);
 router.put('/product/:id', ProductController.updateProduct);
 router.delete('/product/:id', ProductController.deleteProduct);

@@ -15,7 +15,7 @@ const difference = (A, B) => {
         result.push(p);
       }
     }
-  
+  console.log(`result: ${result}`);
     return result;
   }
 
@@ -43,8 +43,8 @@ const createCart = async (req, res, next) => {
     let {cart} = req.body;
     
     let newCart = await Cart.create(cart);
-    console.log(newCart);
-    await Cart.updateMany({"_id": newCart.products}, {$push:{carts: newCart._id}});
+    // console.log(newCart);
+    // await Cart.updateMany({"_id": newCart.products}, {$push:{carts: newCart._id}});
 
     return res.send({
         status_code:res.statusCode,
@@ -61,21 +61,24 @@ const updateCart = async (req, res, next) => {
     let { cart } = req.body;
     // console.log(`product: ${product}`);  
     let newProducts = cart.products;
-    // console.log(`new tag: ${newProducts}`);  
+      console.log(`new Prod: ${JSON.stringify(newProducts)}`);  
     let oldCart = await Cart.findOne({ _id: _id });
     // console.log(oldCart);
     
     let oldProducts = oldCart.products;
-    //  console.log(`old prod: ${oldProducts}`);  
+     console.log(`old prod: ${oldProducts}`);  
 
     Object.assign(oldCart, cart);
      let newCart = await oldCart.save();
   
 
-     let added = difference(newProducts, oldProducts);
-     let removed = difference(oldProducts, newProducts);
-     console.log(JSON.stringify(added));
-    //  const test = await Product.updateMany({ '_id': added }, { $addToSet: { cart: cart._id } });
+    //  let added = difference(newProducts, oldProducts);
+    //  let removed = difference(oldProducts, newProducts);
+    // console.log(`new: ${added.toString()}`);  
+
+    //   console.log(added._id);
+    //  await Product.updateMany({ '_id': added }, { $addToSet: { products: [{product_id:cart._id, quantity: }]} });
+    //  await Product.updateMany({ '_id': added }, { $addToSet: { cart: cart._id } });
     //  console.log(test);
     //  await Product.updateMany({ '_id': removed }, { $pull: { carts: cart._id } });
   
@@ -86,13 +89,31 @@ const updateCart = async (req, res, next) => {
 
 const deleteCart = async (req, res, next) => {
     // let status_code = 200;
-    let msg ='';
+    let message =''; let status_code = 200;
     let _id = mongoose.Types.ObjectId(req.params.id);
     console.log(`id: ${_id}`);
     // let tutorial = await Tutorial.findOne({_id});
-    const cart= await Cart.findById(_id);
+    try{
+        const cart= await Cart.findById(_id);
+        console.log(`cart: ${cart}`);
+        if(!cart){
+            
+            message='ID not found';
+        }
+        
+    }catch(err){
+        message=err;
+    }
+    return  res.json({
+        status_code:status_code,
+        message:message,
 
-   await Cart.findByIdAndDelete(_id).then(()=>{
+    })
+        
+    
+
+
+  /*  await Cart.findByIdAndDelete(_id).then(()=>{
         res.json({
             status_code:res.statusCode,
             message:'Cart delete successfully',
@@ -103,11 +124,10 @@ const deleteCart = async (req, res, next) => {
             statusCode:res.statusCode,
             message:'An error occurred'
         })
-    });
-    //  console.log(`tutorial: ${tutorial}`);
-    await Product.updateMany({"_id": cart._id}, {$pull:{carts:cart._id}});
+    }); */
+    // await Product.updateMany({"_id": cart._id}, {$pull:{carts:cart._id}});
 
-    return res;
+    // return res;
 
 }
 
