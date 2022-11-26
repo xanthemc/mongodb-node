@@ -12,7 +12,7 @@ const app = express();
 const uri ='mongodb+srv://meiching:T%40ylor0213@cluster0.23qtgb3.mongodb.net/testingdb?retryWrites=true&w=majority'
 // const uri ='mongodb://localhost:27017/testingdb';
 
-const Route= require('./routes/employee');
+const Route= require('./routes/all_routes');
 mongoose.connect(uri, {useNewUrlParser:true,useUnifiedTopology:true});
 const db= mongoose.connection;
 
