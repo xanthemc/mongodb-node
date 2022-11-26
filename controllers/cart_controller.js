@@ -75,8 +75,8 @@ const updateCart = async (req, res, next) => {
      let added = difference(newProducts, oldProducts);
      let removed = difference(oldProducts, newProducts);
      console.log(JSON.stringify(added));
-     const test = await Product.updateMany({ '_id': added }, { $addToSet: { cart: cart._id } });
-     console.log(test);
+    //  const test = await Product.updateMany({ '_id': added }, { $addToSet: { cart: cart._id } });
+    //  console.log(test);
     //  await Product.updateMany({ '_id': removed }, { $pull: { carts: cart._id } });
   
      return res.send(newCart);
