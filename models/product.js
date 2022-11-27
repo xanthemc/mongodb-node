@@ -5,16 +5,11 @@ const productSchema = new Schema({
     name: String,
     brand: String,
     description: String,
-    imageUrl: String,
     price: Number,
-    carts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
-      }
-    ]
     
 }, {timestamps:true})
 
 const Product = mongoose.model('Product', productSchema);
+// productSchema.index({ 'name': 'text' });
+
 module.exports = Product;

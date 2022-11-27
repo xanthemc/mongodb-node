@@ -27,10 +27,7 @@ const getCart =(req, res, next) => {
                 message:'Success',
                 data:response
             })}).catch(err => {
-            res.json({
-                status_code:res.statusCode,
-                message:'An error occurred'
-            })
+                res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
     })
 
   
@@ -41,8 +38,14 @@ const getCart =(req, res, next) => {
 const createCart = async (req, res, next) => {
     let msg = '';
     let {cart} = req.body;
-    
-    let newCart = await Cart.create(cart);
+    let newCart =[];
+    try{
+         newCart = await Cart.create(cart);
+
+    }catch(err){
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    }
+   
     // console.log(newCart);
     // await Cart.updateMany({"_id": newCart.products}, {$push:{carts: newCart._id}});
 
@@ -59,30 +62,27 @@ const updateCart = async (req, res, next) => {
     let _id = mongoose.Types.ObjectId(req.params.id);
     
     let { cart } = req.body;
-    // console.log(`product: ${product}`);  
-    let newProducts = cart.products;
-      console.log(`new Prod: ${JSON.stringify(newProducts)}`);  
-    let oldCart = await Cart.findOne({ _id: _id });
-    // console.log(oldCart);
-    
-    let oldProducts = oldCart.products;
-     console.log(`old prod: ${oldProducts}`);  
+    let newCart =[];
+    try {
+        // let newProducts = cart.products;
+        // console.log(`new Prod: ${JSON.stringify(newProducts)}`);  
+        let oldCart = await Cart.findOne({ _id: _id });
+        if(!oldCart) res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
+        // let oldProducts = oldCart.products; 
 
-    Object.assign(oldCart, cart);
-     let newCart = await oldCart.save();
-  
+        Object.assign(oldCart, cart);
+        newCart = await oldCart.save();
+    }
+    catch (err) {
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    }
 
-    //  let added = difference(newProducts, oldProducts);
-    //  let removed = difference(oldProducts, newProducts);
-    // console.log(`new: ${added.toString()}`);  
+    return res.json({
+        status_code:res.statusCode,
+        message:'Success',
+        data: newCart,
 
-    //   console.log(added._id);
-    //  await Product.updateMany({ '_id': added }, { $addToSet: { products: [{product_id:cart._id, quantity: }]} });
-    //  await Product.updateMany({ '_id': added }, { $addToSet: { cart: cart._id } });
-    //  console.log(test);
-    //  await Product.updateMany({ '_id': removed }, { $pull: { carts: cart._id } });
-  
-     return res.send(newCart);
+    })
 }
 
 
@@ -94,21 +94,19 @@ const deleteCart = async (req, res, next) => {
     console.log(`id: ${_id}`);
     // let tutorial = await Tutorial.findOne({_id});
     try{
-        const cart= await Cart.findById(_id);
-        console.log(`cart: ${cart}`);
-        if(!cart){
-            
-            message='ID not found';
-        }
+        const cart= await Cart.findByIdAndDelete(_id);
+        // console.log(`cart: ${cart}`);
+        if (!cart) res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
         
     }catch(err){
-        message=err;
-    }
-    return  res.json({
-        status_code:status_code,
-        message:message,
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
 
-    })
+    }
+    return res.json({
+        status_code:res.statusCode,
+        message:'Success',
+
+    });
         
     
 

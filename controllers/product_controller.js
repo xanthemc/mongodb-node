@@ -27,32 +27,62 @@ const getProduct =(req, res, next) => {
                 message:'Success',
                 data:response
             })}).catch(err => {
-            res.json({
-                status_code:res.statusCode,
-                message:'An error occurred'
-            })
+                res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
     })
 }
 const getSingleProduct =async (req, res, next) => {
     let _id = mongoose.Types.ObjectId(req.params.id);
-   /*  let product = await Product.findById(_id);
 
-    return res.json({ 
-        status_code:res.statusCode,
-        message:'Success',
-        data:product }); */
-        Product.findById(_id).then(
+    try{
+        let product = await Product.findById(_id);
+        if(!product) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+       return res.json({
+            status_code:res.statusCode,
+            message:'Success',
+            data:product
+        })
+
+    }catch(err){
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+
+    }
+ 
+    /*     Product.findById(_id).then(
         response => {
+            
             res.json({
                 status_code:res.statusCode,
                 message:'Success',
                 data:response
             })}).catch(err => {
-            res.json({
-                status_code:res.statusCode,
-                message:'An error occurred'
-            })
-    }) 
+                res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    })  */
+}
+
+
+const getProductByName =async (req, res, next) => {
+
+    const request = req.body.name;
+    let result;
+   
+    try{
+        let regex = new RegExp(`^${request}`, "i"); 
+        result = await Product.find({ "name": regex })
+        console.log(result);
+        // if(result.length==0) {res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });}
+        // const test = await Product.find( { name: { $regex: /^Probiotics/i } } )
+
+
+    }catch(e){
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    }
+
+return res.json({
+    status_code:res.statusCode,
+    message:'Success',
+    data:result
+});
+   
 }
 
 
@@ -61,13 +91,18 @@ const getSingleProduct =async (req, res, next) => {
 const createProduct = async (req, res, next) => {
     let msg = '';
     let {product} = req.body;
-    
-    let newProduct = await Product.create(product);
-    await Cart.updateMany({"_id": newProduct.carts}, {$push:{carts: newProduct._id}});
+    let newProduct=[]
+    try {
+         newProduct = await Product.create(product);
+
+        // await Cart.updateMany({"_id": newProduct.carts}, {$push:{carts: newProduct._id}});
+    }catch(err) {
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    }
 
     return res.send({
         status_code:res.statusCode,
-        message:msg,
+        message:'Success',
         data: newProduct
     });
 }
@@ -75,31 +110,29 @@ const createProduct = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
 
     let _id = mongoose.Types.ObjectId(req.params.id);
-    
+    console.log(`id: ${_id}`);
     let { product } = req.body;
-    // console.log(`product: ${product}`);  
-    let newCarts = product.carts;
-    // console.log(`new tag: ${newTags}`);  
-    let oldProduct = await Product.findOne({ _id: _id });
-    let oldCarts = oldProduct.carts;
-    // console.log(`old tag: ${oldTags}`);  
-
-    Object.assign(oldProduct, product);
-    let newProduct = await oldProduct.save();
-    //  let added = difference(newCarts, oldCarts);
-    //  let removed = difference(oldCarts, newCarts);
-    // console.log(added, removed);
-    // await Cart.updateMany({ '_id': added }, { $addToSet: { product: product._id } });
-    // await Cart.updateMany({ '_id': removed }, { $pull: { product: product._id } });
+    // let newCarts = product.carts;
+    let newProduct=[]
+    try {
+        let oldProduct = await Product.findOne({ _id: _id });
+        if(!oldProduct) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+        Object.assign(oldProduct, product);
+         newProduct = await oldProduct.save();
+    }catch(e) {
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+    }
   
-     return res.send(
-        {
-            status_code:res.statusCode,
-            data: newProduct
-        }
+    return res.send(
+    {
+        status_code:res.statusCode,
+        message:'Success',
+        data: newProduct
+    }
 
-     );
+    );
 }
+
 
 
 
@@ -109,9 +142,22 @@ const deleteProduct = async (req, res, next) => {
     let _id = mongoose.Types.ObjectId(req.params.id);
     console.log(`id: ${_id}`);
     // let tutorial = await Tutorial.findOne({_id});
-    const product= await Product.findById(_id);
 
-   await Product.findByIdAndDelete(_id).then(()=>{
+    try{
+        const product= await Product.findByIdAndDelete(_id);
+        // console.log(`cart: ${product}`);
+        if (!product) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+        
+    }catch(err){
+        res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
+
+    }
+    return res.json({
+        status_code:res.statusCode,
+        message:'Success',
+
+    });
+  /*  await Product.findByIdAndDelete(_id).then(()=>{
         res.json({
             status_code:res.statusCode,
             message:'Product delete successfully',
@@ -122,17 +168,17 @@ const deleteProduct = async (req, res, next) => {
             statusCode:res.statusCode,
             message:'An error occurred'
         })
-    });
+    }); */
     //  console.log(`tutorial: ${tutorial}`);
     // await Cart.updateMany({"_id": product._id}, {$pull:{products:product._id}});
 
-    return res;
+    // return res;
 
 }
 
 
 
 module.exports = {
-    getProduct,getSingleProduct, createProduct,updateProduct,deleteProduct
+    getProduct,getSingleProduct,getProductByName, createProduct,updateProduct,deleteProduct
 }
 
