@@ -35,7 +35,7 @@ const getSingleProduct =async (req, res, next) => {
 
     try{
         let product = await Product.findById(_id);
-        if(!product) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+        if(!product) return res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
        return res.json({
             status_code:res.statusCode,
             message:'Success',
@@ -63,13 +63,17 @@ const getSingleProduct =async (req, res, next) => {
 const getProductByName =async (req, res, next) => {
 
     const request = req.body.name;
-    let result;
+    let result=[];
    
     try{
         let regex = new RegExp(`^${request}`, "i"); 
         result = await Product.find({ "name": regex })
         console.log(result);
-        // if(result.length==0) {res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });}
+        if(!(result.length)){
+            console.log(result);
+            return res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+        }
+        // if(!result.length) {res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });}
         // const test = await Product.find( { name: { $regex: /^Probiotics/i } } )
 
 
@@ -116,7 +120,7 @@ const updateProduct = async (req, res, next) => {
     let newProduct=[]
     try {
         let oldProduct = await Product.findOne({ _id: _id });
-        if(!oldProduct) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
+        if(!oldProduct) return res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
         Object.assign(oldProduct, product);
          newProduct = await oldProduct.save();
     }catch(e) {
@@ -154,7 +158,7 @@ const deleteProduct = async (req, res, next) => {
     }
     return res.json({
         status_code:res.statusCode,
-        message:'Success',
+        message:'Product delete successfully',
 
     });
   /*  await Product.findByIdAndDelete(_id).then(()=>{

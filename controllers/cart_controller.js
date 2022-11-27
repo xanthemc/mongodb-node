@@ -67,7 +67,7 @@ const updateCart = async (req, res, next) => {
         // let newProducts = cart.products;
         // console.log(`new Prod: ${JSON.stringify(newProducts)}`);  
         let oldCart = await Cart.findOne({ _id: _id });
-        if(!oldCart) res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
+        if(!oldCart)return res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
         // let oldProducts = oldCart.products; 
 
         Object.assign(oldCart, cart);
@@ -96,7 +96,7 @@ const deleteCart = async (req, res, next) => {
     try{
         const cart= await Cart.findByIdAndDelete(_id);
         // console.log(`cart: ${cart}`);
-        if (!cart) res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
+        if (!cart) return res.status(404).json({ status_code:res.statusCode, message: 'Cart not found' });
         
     }catch(err){
         res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
@@ -104,7 +104,7 @@ const deleteCart = async (req, res, next) => {
     }
     return res.json({
         status_code:res.statusCode,
-        message:'Success',
+        message:'Cart delete successfully',
 
     });
         
