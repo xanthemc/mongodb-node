@@ -1,23 +1,10 @@
-// const Blog = require('../models/blog.js') ;
 const mongoose = require("mongoose");
 // const db = require("./models");
 const Cart = require('../models/cart.js')
 const Product = require('../models/product.js');
 const { response } = require("express");
 
-const difference = (A, B) => {
-    const arrA = Array.isArray(A) ? A.map(x => x.toString()) : [A.toString()];
-    const arrB = Array.isArray(B) ? B.map(x => x.toString()) : [B.toString()];
-  
-    const result = [];
-    for (const p of arrA) {
-      if (arrB.indexOf(p) === -1) {
-        result.push(p);
-      }
-    }
-  
-    return result;
-  }
+
 
 const getProduct =(req, res, next) => {
     Product.find().then(
@@ -47,16 +34,7 @@ const getSingleProduct =async (req, res, next) => {
 
     }
  
-    /*     Product.findById(_id).then(
-        response => {
-            
-            res.json({
-                status_code:res.statusCode,
-                message:'Success',
-                data:response
-            })}).catch(err => {
-                res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
-    })  */
+   
 }
 
 
@@ -70,11 +48,9 @@ const getProductByName =async (req, res, next) => {
         result = await Product.find({ "name": regex })
         console.log(result);
         if(!(result.length)){
-            console.log(result);
+            
             return res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
         }
-        // if(!result.length) {res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });}
-        // const test = await Product.find( { name: { $regex: /^Probiotics/i } } )
 
 
     }catch(e){
@@ -99,7 +75,6 @@ const createProduct = async (req, res, next) => {
     try {
          newProduct = await Product.create(product);
 
-        // await Cart.updateMany({"_id": newProduct.carts}, {$push:{carts: newProduct._id}});
     }catch(err) {
         res.status(500).json({status_code:res.statusCode,  message: 'Something went wrong. Please try again later' });
     }
@@ -139,17 +114,15 @@ const updateProduct = async (req, res, next) => {
 
 
 
-
 const deleteProduct = async (req, res, next) => {
     // let status_code = 200;
     let msg ='';
     let _id = mongoose.Types.ObjectId(req.params.id);
-    console.log(`id: ${_id}`);
-    // let tutorial = await Tutorial.findOne({_id});
+    
 
     try{
         const product= await Product.findByIdAndDelete(_id);
-        // console.log(`cart: ${product}`);
+      
         if (!product) res.status(404).json({ status_code:res.statusCode, message: 'Product not found' });
         
     }catch(err){
@@ -161,22 +134,6 @@ const deleteProduct = async (req, res, next) => {
         message:'Product delete successfully',
 
     });
-  /*  await Product.findByIdAndDelete(_id).then(()=>{
-        res.json({
-            status_code:res.statusCode,
-            message:'Product delete successfully',
-        
-        })
-    }).catch(error=>{
-        res.json({
-            statusCode:res.statusCode,
-            message:'An error occurred'
-        })
-    }); */
-    //  console.log(`tutorial: ${tutorial}`);
-    // await Cart.updateMany({"_id": product._id}, {$pull:{products:product._id}});
-
-    // return res;
 
 }
 
